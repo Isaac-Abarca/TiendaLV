@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{General/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{General/fragmentos :: header}"></header>
+
+        <div class="container mt-5">
+            <div class="row mb-4">
+                <div class="col">
+                    <h2>Gestión de Productos</h2>
+                </div>
+                <div class="col text-end">
+                    <button type="button" class="btn btn-primary" onclick="abrirModalProducto()">
+                        <i class="fas fa-plus"></i> Nuevo Producto
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="card shadow">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0 table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Precio</th>
+                                        <th>Stock</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${productos}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img th:src="${p.rutaImagen}" class="rounded me-3" style="width: 45px; height: 45px; object-fit: cover;">
+                                                <div>
+                                                    <p class="fw-bold mb-0">[[${p.descripcion}]]</p>
+                                                    <small class="text-muted">[[${p.detalle}]]</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>₡[[${#numbers.formatDecimal(p.precio, 1, 'COMMA', 2, 'POINT')}]]</td>
+                                        <td>[[${p.existencias}]]</td>
+                                        <td>
+                                            <span th:class="${p.activo ? 'badge bg-success' : 'badge bg-danger'}">
+                                                [[${p.activo ? 'Activo' : 'Inactivo'}]]
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-warning btn-sm"
+                                                    th:onclick="abrirModalProducto([[${p.idProducto}]], [[${p.descripcion}]], [[${p.idCategoria}]], [[${p.precio}]], [[${p.existencias}]], [[${p.detalle}]], [[${p.rutaImagen}]], [[${p.activo}]])">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <a th:href="@{/producto/eliminar/}+${p.idProducto}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar producto?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white text-center p-3 shadow">
+                        <h5>Total Productos</h5>
+                        <h2 class="display-4">[[${totalProductos}]]</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-white" id="modalHeader">
+                        <h5 class="modal-title" id="modalTitulo">Agregar Nuevo Producto</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/producto/guardar}" method="POST" id="formProducto">
+                        <input type="hidden" name="idProducto" id="p_id" />
+                        
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Descripción</label>
+                                    <input type="text" name="descripcion" id="p_desc" class="form-control" required />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Categoría</label>
+                                    <select name="idCategoria" id="p_cat" class="form-select" required>
+                                        <option value="">Seleccione una...</option>
+                                        <option th:each="c : ${categorias}" th:value="${c.idCategoria}" th:text="${c.descripcion}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Precio</label>
+                                    <input type="number" name="precio" id="p_precio" class="form-control" step="0.01" required />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Existencias</label>
+                                    <input type="number" name="existencias" id="p_stock" class="form-control" required />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Detalle</label>
+                                    <input type="text" name="detalle" id="p_detalle" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">URL Imagen</label>
+                                <input type="text" name="rutaImagen" id="p_ruta" class="form-control" />
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="activo" id="p_activo" />
+                                <label class="form-check-label" for="p_activo">¿Producto activo?</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" id="btnGuardar" class="btn btn-success">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{General/fragmentos :: footer}"></footer>
+
+        <script>
+            function abrirModalProducto(id, desc, idCat, precio, stock, detalle, ruta, activo) {
+                const titulo = document.getElementById('modalTitulo');
+                const boton = document.getElementById('btnGuardar');
+                const header = document.getElementById('modalHeader');
+                const form = document.getElementById('formProducto');
+
+                if (id) {
+                    // MODO EDICIÓN (Color Info/Amarillo)
+                    titulo.innerText = "Editar Producto #" + id;
+                    header.classList.replace('bg-dark', 'bg-info');
+                    boton.innerText = "Actualizar Cambios";
+                    boton.classList.replace('btn-success', 'btn-info');
+
+                    // Llenar datos
+                    document.getElementById('p_id').value = id;
+                    document.getElementById('p_desc').value = desc;
+                    document.getElementById('p_cat').value = idCat;
+                    document.getElementById('p_precio').value = precio;
+                    document.getElementById('p_stock').value = stock;
+                    document.getElementById('p_detalle').value = detalle;
+                    document.getElementById('p_ruta').value = ruta;
+                    document.getElementById('p_activo').checked = activo;
+                } else {
+                    // MODO NUEVO (Color Dark/Verde)
+                    titulo.innerText = "Agregar Nuevo Producto";
+                    header.classList.replace('bg-info', 'bg-dark');
+                    boton.innerText = "Guardar Producto";
+                    boton.classList.replace('btn-info', 'btn-success');
+
+                    // Limpiar formulario
+                    form.reset();
+                    document.getElementById('p_id').value = "";
+                    document.getElementById('p_activo').checked = true;
+                }
+
+                // Mostrar modal
+                new bootstrap.Modal(document.getElementById('modalProducto')).show();
+            }
+        </script>
+    </body>
+</html>

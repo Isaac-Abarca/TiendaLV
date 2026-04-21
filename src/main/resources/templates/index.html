@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{General/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{General/fragmentos :: header}"></header>
+
+        <div class="container mt-4">
+            <div class="row mb-5">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow-sm p-3" style="border-radius: 50px; background-color: #f8f9fa;">
+                        <div class="d-flex align-items-center justify-content-between px-3 flex-wrap gap-3">
+
+                            <div class="d-flex flex-wrap gap-2">
+                                <a th:href="@{/}" 
+                                   th:class="${idCategoriaSelected == null} ? 'btn btn-dark rounded-pill px-4 btn-sm' : 'btn btn-white border rounded-pill px-4 btn-sm hover-category'">
+                                    Todas
+                                </a>
+                                <th:block th:each="c : ${categorias}">
+                                    <a th:href="@{/(idCategoria=${c.idCategoria})}" 
+                                       th:class="${idCategoriaSelected != null and idCategoriaSelected == c.idCategoria} ? 'btn btn-dark rounded-pill px-4 btn-sm' : 'btn btn-white border rounded-pill px-4 btn-sm hover-category'">
+                                        [[${c.descripcion}]]
+                                    </a>
+                                </th:block>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <a th:if="${idCategoriaSelected != null or precioMin != null or precioMax != null}" 
+                                   th:href="@{/}" 
+                                   class="btn btn-outline-danger btn-sm rounded-pill px-3" 
+                                   title="Limpiar todos los filtros">
+                                    <i class="fas fa-times me-1"></i> Limpiar
+                                </a>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-dark btn-sm rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-tags me-1"></i> Precio
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end p-3 shadow border-0" style="width: 250px; border-radius: 15px;">
+                                        <form th:action="@{/}" method="get">
+                                            <input type="hidden" name="idCategoria" th:value="${idCategoriaSelected}">
+
+                                            <p class="small fw-bold mb-2">Rango de precio (₡)</p>
+                                            <div class="d-flex gap-2 align-items-center mb-3">
+                                                <input type="number" name="precioMin" class="form-control form-control-sm" placeholder="Min" th:value="${precioMin}">
+                                                <span class="text-muted">-</span>
+                                                <input type="number" name="precioMax" class="form-control form-control-sm" placeholder="Max" th:value="${precioMax}">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill">Aplicar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div class="col" th:each="p : ${productos}">
+                    <div class="card h-100 shadow-sm border-0 product-card">
+                        <img th:src="${p.rutaImagen}" class="card-img-top p-2" alt="Producto" 
+                             style="height: 200px; object-fit: contain;">
+
+                        <div class="card-body text-center">
+                            <h6 class="card-title fw-bold">[[${p.descripcion}]]</h6>
+                            <p class="card-text text-muted small">[[${p.detalle}]]</p>
+
+                            <span th:if="${p.existencias > 0}" class="badge bg-success mb-2">
+                                [[${p.existencias}]] unidades
+                            </span>
+                            <span th:unless="${p.existencias > 0}" class="badge bg-danger mb-2">Agotado</span>
+
+                            <h5 class="text-primary fw-bold">₡[[${#numbers.formatDecimal(p.precio, 1, 'COMMA', 2, 'POINT')}]]</h5>
+                        </div>
+
+                        <div class="card-footer bg-transparent border-0 pb-3 text-center">
+                            <a th:href="@{/carrito/agregar/{id}(id=${p.idProducto})}" 
+                               class="btn btn-outline-primary w-100 rounded-pill btn-cart">
+                                <i class="fas fa-cart-plus me-1"></i> Agregar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{General/fragmentos :: footer}"></footer>
+
+        <style>
+            .product-card {
+                transition: transform 0.3s ease;
+            }
+            .product-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .btn-outline-danger {
+                border-color: #ffcdd2; /* Un rojo más suave para que no "grite" */
+                color: #d32f2f;
+            }
+            .btn-outline-danger:hover {
+                background-color: #d32f2f;
+                border-color: #d32f2f;
+                color: white;
+            }
+        </style>
+    </body>
+</html>

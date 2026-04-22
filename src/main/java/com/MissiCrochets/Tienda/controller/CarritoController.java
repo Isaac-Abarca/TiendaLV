@@ -1,13 +1,19 @@
 package com.MissiCrochets.Tienda.controller;
 
+import com.MissiCrochets.Tienda.domain.Factura;
 import com.MissiCrochets.Tienda.domain.Item;
 import com.MissiCrochets.Tienda.domain.Producto;
+import com.MissiCrochets.Tienda.service.FacturaService;
 import com.MissiCrochets.Tienda.service.ItemService;
 import com.MissiCrochets.Tienda.service.ProductoService;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class CarritoController {
@@ -16,6 +22,10 @@ public class CarritoController {
     private ItemService itemService;
     @Autowired
     private ProductoService productoService;
+    @Autowired
+    private FacturaService facturaService;
+    @Autowired
+    private HttpSession session;
 
     @GetMapping("/carrito/listado")
     public String inicio(Model model) {
@@ -30,7 +40,7 @@ public class CarritoController {
     }
 
     @GetMapping("/carrito/agregar/{idProducto}")
-    public String agregarItem(Producto producto, Model model) {
+    public String agregarItem(Producto producto) {
         producto = productoService.getProducto(producto);
         if (producto != null && producto.getExistencias() > 0) {
             itemService.save(new Item(producto));
@@ -44,15 +54,42 @@ public class CarritoController {
         return "redirect:/carrito/listado";
     }
 
+    // Cambiado para recibir la cantidad por URL (Path Variable)
     @GetMapping("/carrito/modificar/{idProducto}/{cantidad}")
-    public String modificarItem(Item item) {
-        // Buscamos el item en el servicio
-        Item actual = itemService.get(item);
-
-        // Si el item existe y la nueva cantidad es válida (mayor a 0 y menor al stock)
-        if (actual != null && item.getCantidad() > 0 && item.getCantidad() <= actual.getExistencias()) {
-            itemService.update(item);
-        }
+    public String modificarItem(Item item, @PathVariable("cantidad") int cantidad) {
+        item.setCantidad(cantidad);
+        itemService.update(item);
         return "redirect:/carrito/listado";
+    }
+
+    // Nuevo: Método para vaciar el carrito manualmente
+    @GetMapping("/carrito/vaciar")
+    public String vaciar() {
+        itemService.gets().clear();
+        return "redirect:/carrito/listado";
+    }
+
+    @GetMapping("/carrito/pagar")
+    public String pagar() {
+        // Esta vista mostrará el spinner y redirigirá a /finalizar tras 3 segundos
+        return "carrito/pagar"; 
+    }
+
+    @GetMapping("/carrito/finalizar")
+    public String finalizarCompra(Model model) {
+        var carrito = itemService.gets();
+        
+        if (carrito != null && !carrito.isEmpty()) {
+            Factura factura = facturaService.registrarCompra(carrito);
+            model.addAttribute("factura", factura);
+            model.addAttribute("ventas", new ArrayList<>(carrito)); // Copia para la vista
+            
+            carrito.clear();
+            
+            session.setAttribute("cartTotal", 0.0);
+            
+            return "carrito/factura"; 
+        }
+        return "redirect:/";
     }
 }

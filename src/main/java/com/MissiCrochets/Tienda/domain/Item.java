@@ -20,6 +20,6 @@ public class Item extends Producto {
         this.setExistencias(producto.getExistencias());
         this.setActivo(producto.isActivo());
         this.setRutaImagen(producto.getRutaImagen());
-        this.cantidad = 0;
+        this.cantidad = 1;
     }
 }

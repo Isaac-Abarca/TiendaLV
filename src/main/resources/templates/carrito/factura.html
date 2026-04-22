@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{General/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{General/fragmentos :: header}"></header>
+        
+        <div class="container my-5">
+            <div class="card shadow-lg p-5 border-0" style="border-radius: 25px;">
+                <div class="text-center mb-4">
+                    <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
+                    <h1 class="fw-bold">¡Compra Exitosa!</h1>
+                    <p class="text-muted">Gracias por confiar en NissiCrochet</p>
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <h5 class="fw-bold">N° de Factura:</h5>
+                        <p th:text="'#' + ${factura.idFactura}"></p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <h5 class="fw-bold">Fecha:</h5>
+                        <p th:text="${factura.fecha}"></p>
+                    </div>
+                </div>
+
+                <table class="table table-borderless">
+                    <thead>
+                        <tr class="border-bottom">
+                            <th>Producto</th>
+                            <th class="text-center">Cant.</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${ventas}">
+                            <td th:text="'Producto ID: ' + ${v.idProducto}"></td>
+                            <td class="text-center" th:text="${v.cantidad}"></td>
+                            <td class="text-end" th:text="'₡' + ${v.precio * v.cantidad}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="text-end mt-4">
+                    <h3 class="fw-bold text-info" th:text="'Total Pagado: ₡' + ${factura.total}"></h3>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-5">
+                    <a th:href="@{/}" class="btn btn-outline-info btn-lg rounded-pill px-5">Volver a la Tienda</a>
+                    <button onclick="window.print()" class="btn btn-dark btn-lg rounded-pill px-5">Imprimir Factura</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer th:replace="~{General/fragmentos :: footer}"></footer>
+    </body>
+</html>

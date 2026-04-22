@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{General/fragmentos :: head}">
+        <meta http-equiv="refresh" content="3;url=/carrito/finalizar">
+    </head>
+    <body class="bg-light">
+        <div class="container vh-100 d-flex flex-column justify-content-center align-items-center">
+            <div class="spinner-border text-info" role="status" style="width: 5rem; height: 5rem;"></div>
+            <h2 class="mt-4 text-secondary">Procesando su pago de forma segura...</h2>
+            <p class="text-muted">Por favor, no cierre esta ventana.</p>
+        </div>
+        <script>
+            setTimeout(function () {
+                window.location.href = "/carrito/finalizar";
+            }, 3000); // 3000 milisegundos = 3 segundos
+        </script>
+    </body>
+</html>

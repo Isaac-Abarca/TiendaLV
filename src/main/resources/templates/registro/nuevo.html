@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{General/fragmentos :: head}">
+        <title>Registro - NissiCrochet</title>
+    </head>
+    <body>
+        <header th:replace="~{General/fragmentos :: header}"></header>
+
+        <section class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 card shadow p-4" style="border-radius: 20px;">
+                    <h2 class="text-center text-info fw-bold mb-4">Crear Nueva Cuenta</h2>
+                    
+                    <form th:action="@{/registro/guardar}" th:object="${usuario}" method="POST" class="was-validated">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nombre de Usuario</label>
+                            <input type="text" name="username" class="form-control rounded-pill" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Contraseña</label>
+                            <input type="password" name="password" class="form-control rounded-pill" required />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Nombre</label>
+                                <input type="text" name="nombre" class="form-control rounded-pill" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Apellidos</label>
+                                <input type="text" name="apellidos" class="form-control rounded-pill" required />
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Correo Electrónico</label>
+                            <input type="email" name="correo" class="form-control rounded-pill" required />
+                        </div>
+                        
+                        <button class="btn btn-info btn-lg rounded-pill w-100 fw-bold text-white" type="submit">
+                            <i class="fas fa-user-plus me-2"></i>Registrarme
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <p class="small">¿Ya tienes cuenta? <a th:href="@{/login}" class="text-info">Inicia sesión aquí</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer th:replace="~{General/fragmentos :: footer}"></footer>
+    </body>
+</html>

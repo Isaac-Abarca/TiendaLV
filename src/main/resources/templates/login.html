@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{General/fragmentos :: head}"></head>
+    <body class="bg-light">
+        <header th:replace="~{General/fragmentos :: header}"></header>
+
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+                        <h2 class="text-center fw-bold mb-4">Ingresar</h2>
+
+                        <div th:if="${param.error}" class="alert alert-danger p-2 small text-center">
+                            Usuario o contraseña incorrectos.
+                        </div>
+                        <div th:if="${registroExito}" class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 15px;">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${registroExito}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <form th:action="@{/login}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Usuario</label>
+                                <input type="text" name="username" class="form-control rounded-pill" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold">Contraseña</label>
+                                <input type="password" name="password" class="form-control rounded-pill" required>
+                            </div>
+                            <button type="submit" class="btn btn-dark w-100 rounded-pill py-2 fw-bold">
+                                ENTRAR
+                            </button>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <span class="small text-muted">¿No tienes cuenta?</span>
+                            <a th:href="@{/registro/nuevo}" class="small text-info text-decoration-none fw-bold">Regístrate aquí</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{General/fragmentos :: footer}"></footer>
+        <script>
+            document.querySelector('form').addEventListener('submit', function () {
+                const btn = this.querySelector('button[type="submit"]');
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando...';
+                btn.classList.add('disabled');
+            });
+        </script>
+    </body>
+</html>
